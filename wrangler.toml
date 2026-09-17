@@ -2,7 +2,8 @@
 # Committing this means the compatibility flags travel with the repo — you don't
 # have to set them by hand in the dashboard.
 
-name = "steampunk-express"
+# Must match your Cloudflare Pages project name exactly (wrangler deploys here).
+name = "steampunk-avion"
 pages_build_output_dir = "dist"
 compatibility_date = "2024-11-01"
 
