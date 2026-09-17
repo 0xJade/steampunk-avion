@@ -1,0 +1,102 @@
+---
+import '../styles/global.css';
+import { listing } from '@config/listing';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = `${listing.name} · Moab, Utah`,
+  description = listing.tagline,
+} = Astro.props;
+
+const canonical = listing.seo.siteUrl;
+const ogImage = listing.seo.ogImage;
+
+// Schema.org: LodgingBusiness + AggregateRating. Kept in sync with config so
+// the rating never drifts from what's shown on the page.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LodgingBusiness',
+  name: listing.name,
+  description: listing.tagline,
+  url: canonical,
+  image: ogImage,
+  petsAllowed: false,
+  numberOfRooms: listing.capacity.bedrooms,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Moab',
+    addressRegion: 'UT',
+    addressCountry: 'US',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: listing.location.lat,
+    longitude: listing.location.lng,
+  },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: listing.reviews.rating,
+    reviewCount: listing.reviews.count,
+    bestRating: 5,
+    worstRating: 1,
+  },
+  amenityFeature: listing.amenities.map((a) => ({
+    '@type': 'LocationFeatureSpecification',
+    name: a.label,
+    value: true,
+  })),
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="canonical" href={canonical} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Preload the most impactful fonts (display H1 + body). Others swap in. -->
+    <link
+      rel="preload"
+      href="/fonts/cinzel-latin-600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={listing.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={`${listing.name} — restored Avion trailer interior`} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="theme-color" content="#14100D" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body class="grain">
+    <slot />
+  </body>
+</html>

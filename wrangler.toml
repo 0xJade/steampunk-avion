@@ -1,0 +1,30 @@
+# Cloudflare Pages configuration for Steampunk Express.
+# Committing this means the compatibility flags travel with the repo — you don't
+# have to set them by hand in the dashboard.
+
+name = "steampunk-express"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-11-01"
+
+# REQUIRED: node-ical (the .ics parser) imports Node built-ins like `fs`.
+# Without this flag the availability Worker throws at runtime.
+compatibility_flags = ["nodejs_compat"]
+
+# ── Non-secret config (safe to commit). ──────────────────────────────────────
+# The .ics token is a SECRET — do NOT put ICS_URL here. Set it as an encrypted
+# secret in the dashboard (Settings → Environment variables → Add, "Encrypt"),
+# or with: npx wrangler pages secret put ICS_URL
+[vars]
+AVAILABILITY_PROVIDER = "ical"
+AVAILABILITY_CACHE_SECONDS = "1200"
+
+# ── Optional: sessions KV binding. ───────────────────────────────────────────
+# The Astro Cloudflare adapter references a "SESSION" KV binding. This site does
+# NOT use sessions, so you can ignore it. Only if you ever see
+# "Invalid binding `SESSION`" at runtime, create a namespace and uncomment:
+#
+#   npx wrangler kv namespace create SESSION
+#
+# [[kv_namespaces]]
+# binding = "SESSION"
+# id = "PASTE_NAMESPACE_ID_HERE"

@@ -1,0 +1,18 @@
+# build output
+dist/
+.astro/
+.output/
+.wrangler/
+
+# dependencies
+node_modules/
+
+# secrets — never commit the real .ics token or PMS keys
+.env
+.env.*
+!.env.example
+
+# editor / os
+.DS_Store
+*.log
+.vscode/

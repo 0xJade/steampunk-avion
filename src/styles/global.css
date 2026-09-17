@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Self-hosted fonts. Place subset .woff2 files in /public/fonts/ (see README
+   for the subsetting command). font-display: swap keeps text visible on Fast 3G.
+   If a file is missing the stack falls back gracefully — nothing breaks.
+   ───────────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Cinzel';
+  src: url('/fonts/cinzel-latin-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  /* Inter ships as a variable font — one file covers the whole weight range. */
+  font-family: 'Inter';
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Special Elite';
+  src: url('/fonts/special-elite-latin-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tokens also as CSS custom properties, for the calendar island and any
+   non-Tailwind context. Mirrors tailwind.config.ts. */
+:root {
+  --ink: #14100d;
+  --ink-2: #1f1912;
+  --plum: #3b2233;
+  --brass: #b3893f;
+  --brass-lit: #d9a94c;
+  --ember: #e9932f;
+  --filament: #ffc15e;
+  --patina: #4e7a72;
+  --parchment: #ede0c8;
+  --parchment-d: #b9ab93;
+
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--ink);
+    color: var(--parchment);
+    font-family: theme('fontFamily.body');
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: theme('fontFamily.display');
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+    color: var(--parchment);
+  }
+
+  /* Visible, on-brand focus ring for keyboard users. */
+  :focus-visible {
+    outline: 2px solid var(--brass-lit);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--brass);
+    color: var(--ink);
+  }
+}
+
+@layer components {
+  /* Thin brass hairline rule used as a section divider. */
+  .hairline {
+    height: 1px;
+    border: 0;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--brass) 15%,
+      var(--brass) 85%,
+      transparent
+    );
+    opacity: 0.5;
+  }
+
+  /* Warm bulb-lit card. */
+  .card-bulb {
+    background-color: var(--ink-2);
+    box-shadow: theme('boxShadow.bulb');
+    border: 1px solid rgba(179, 137, 63, 0.18);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ONE texture: an aged-paper / film-grain overlay at low opacity. Fixed, behind
+   content, pointer-events off. Kept as a tiny inline SVG data URI so it costs no
+   extra request. Turned off under reduced-motion? No — it's static, so it stays.
+   ───────────────────────────────────────────────────────────────────────────── */
+.grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Motion: slow, soft, fades + gentle translate only. Respect reduced-motion.
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 350ms var(--ease-soft, cubic-bezier(0.22, 1, 0.36, 1)),
+      transform 350ms var(--ease-soft, cubic-bezier(0.22, 1, 0.36, 1));
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

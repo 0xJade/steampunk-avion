@@ -1,0 +1,36 @@
+---
+import { listing } from '@config/listing';
+import Icon from './icons/Icon.astro';
+
+const { description, amenities, capacity } = listing;
+---
+
+<section id="the-space" class="mx-auto max-w-5xl px-6 py-20 md:py-28">
+  <div class="grid gap-12 md:grid-cols-[1.1fr_1fr] md:gap-16">
+    <div>
+      <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-brass">
+        The Space
+      </p>
+      <h2 class="mt-3 font-display text-3xl md:text-4xl">A parlor on wheels</h2>
+      <div class="mt-6 space-y-4 text-parchment-d">
+        {description.map((p) => <p>{p}</p>)}
+      </div>
+      <p class="mt-6 font-typewriter text-sm text-parchment-d">
+        Sleeps {capacity.guests} · {capacity.sleeping} · {capacity.baths} bath
+      </p>
+    </div>
+
+    <ul class="grid grid-cols-2 gap-x-6 gap-y-6 self-center sm:grid-cols-3 md:grid-cols-2">
+      {
+        amenities.map((a) => (
+          <li class="flex items-center gap-3">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-brass/30 text-brass">
+              <Icon name={a.icon} size={20} />
+            </span>
+            <span class="text-sm text-parchment">{a.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

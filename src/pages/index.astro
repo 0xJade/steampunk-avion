@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+import TheSpace from '@components/TheSpace.astro';
+import Location from '@components/Location.astro';
+import Reviews from '@components/Reviews.astro';
+import FooterCTA from '@components/FooterCTA.astro';
+import Availability from '@components/Availability.tsx';
+import Gallery from '@components/Gallery.astro';
+import { Picture } from 'astro:assets';
+import { heroImage, hasPhotos } from '@lib/gallery';
+import { listing } from '@config/listing';
+
+// Hero and Gallery slot in once photos are dropped in src/assets/steampunk-express/.
+// Availability island slots into #availability next.
+---
+
+<Base>
+  <!-- HERO -->
+  <header
+    class="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-plum/40 via-ink to-ink px-6 py-24 text-center"
+  >
+    {
+      hasPhotos && heroImage && (
+        <>
+          <Picture
+            src={heroImage}
+            formats={['avif', 'webp']}
+            widths={[768, 1280, 1920]}
+            sizes="100vw"
+            loading="eager"
+            fetchpriority="high"
+            alt={`${listing.name} — the Avion trailer and private patio in Moab`}
+            pictureAttributes={{ class: 'absolute inset-0 -z-10 h-full w-full' }}
+            class="h-full w-full object-cover"
+          />
+          {/* Scrim for WCAG-AA text contrast over the photo. */}
+          <div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/40 to-ink/90" aria-hidden="true" />
+        </>
+      )
+    }
+    <p class="font-typewriter text-sm uppercase tracking-[0.2em] text-brass drop-shadow">
+      Enchanted Escapes · Moab, Utah
+    </p>
+    <h1 class="mt-4 font-display text-5xl md:text-7xl">{listing.name}</h1>
+    <p class="mx-auto mt-6 max-w-xl text-lg text-parchment-d">{listing.tagline}</p>
+
+    <div class="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-parchment-d">
+      <span class="text-brass-lit">★ {listing.reviews.rating.toFixed(2)}</span>
+      <span aria-hidden="true">·</span>
+      <span>{listing.reviews.count} reviews</span>
+      {listing.badges.superhost && (<><span aria-hidden="true">·</span><span>Superhost</span></>)}
+      {listing.badges.guestFavorite && (<><span aria-hidden="true">·</span><span>Guest Favorite</span></>)}
+    </div>
+
+    <a
+      href="#availability"
+      class="mt-10 inline-block rounded-md bg-ember px-6 py-3 font-body font-semibold text-ink shadow-ember transition-colors duration-250 ease-soft hover:bg-brass-lit"
+    >
+      Check availability
+    </a>
+  </header>
+
+  <hr class="hairline mx-auto max-w-5xl" />
+
+  <TheSpace />
+
+  <Gallery />
+
+  <!-- AVAILABILITY — the only hydrated island -->
+  <section id="availability" class="mx-auto max-w-5xl px-6 py-20 md:py-28">
+    <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-brass">Availability</p>
+    <h2 class="mt-3 font-display text-3xl md:text-4xl">Find your dates</h2>
+    <p class="mt-4 max-w-2xl text-parchment-d">
+      Open nights are selectable below. Pick a check-in and checkout, then book on Airbnb —
+      the only place reservations are made.
+    </p>
+    <noscript>
+      <p class="mt-6 text-parchment-d">
+        Live availability needs JavaScript. You can always
+        <a href={listing.airbnbUrl} target="_blank" rel="noopener" class="text-brass-lit underline">
+          view open dates and book on Airbnb</a>.
+      </p>
+    </noscript>
+    <Availability
+      client:visible
+      airbnbUrl={listing.airbnbUrl}
+      monthsForward={listing.booking.monthsForward}
+      defaultMinNights={listing.booking.defaultMinNights}
+      defaultAdults={listing.booking.defaultAdults}
+    />
+  </section>
+
+  <Location />
+  <Reviews />
+  <FooterCTA />
+</Base>

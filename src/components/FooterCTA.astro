@@ -1,0 +1,64 @@
+---
+import { listing } from '@config/listing';
+import Icon from './icons/Icon.astro';
+
+const { name, airbnbUrl, hostProfileUrl, siblings } = listing;
+const year = new Date().getFullYear();
+---
+
+<footer id="book" class="border-t border-brass/20 bg-ink-2">
+  <div class="mx-auto max-w-5xl px-6 py-20 text-center md:py-28">
+    <h2 class="font-display text-3xl md:text-4xl">Your desert parlor awaits</h2>
+    <p class="mx-auto mt-4 max-w-xl text-parchment-d">
+      Check the calendar for open dates, then book securely on Airbnb.
+    </p>
+
+    <a
+      href={airbnbUrl}
+      target="_blank"
+      rel="noopener"
+      class="mt-8 inline-flex items-center gap-2 rounded-md bg-ember px-8 py-4 font-body text-lg font-semibold text-ink shadow-ember transition-colors duration-250 ease-soft hover:bg-brass-lit"
+    >
+      Book on Airbnb
+      <Icon name="external" size={18} />
+    </a>
+
+    <div class="mx-auto mt-16 max-w-2xl">
+      <hr class="hairline" />
+      <p class="mt-8 font-typewriter text-xs uppercase tracking-[0.2em] text-brass">
+        More Enchanted Escapes
+      </p>
+      <p class="mt-2 text-sm text-parchment-d">
+        Sibling trailers from the same host, also in Moab.
+      </p>
+      <ul class="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2">
+        {
+          siblings.map((s) => (
+            <li>
+              <a
+                href={s.url}
+                target="_blank"
+                rel="noopener"
+                class="font-display text-parchment underline-offset-4 transition-colors duration-250 ease-soft hover:text-brass-lit hover:underline"
+              >
+                {s.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a
+        href={hostProfileUrl}
+        target="_blank"
+        rel="noopener"
+        class="mt-4 inline-block font-body text-sm text-brass-lit underline-offset-4 hover:text-filament hover:underline"
+      >
+        See all of Tamara’s trailers →
+      </a>
+    </div>
+
+    <p class="mt-16 text-xs text-parchment-d">
+      © {year} {name}. Not affiliated with Airbnb, Inc. Booking and payment happen on Airbnb.
+    </p>
+  </div>
+</footer>

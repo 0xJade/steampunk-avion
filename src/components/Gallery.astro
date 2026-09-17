@@ -1,0 +1,72 @@
+---
+import { Picture, getImage } from 'astro:assets';
+import { galleryImages } from '@lib/gallery';
+import { listing } from '@config/listing';
+
+// Pre-generate an optimized large version of each photo for the lightbox, plus
+// the exact pixel dimensions PhotoSwipe needs. Thumbnails are handled by <Image>.
+const items = await Promise.all(
+  galleryImages.map(async (img, i) => {
+    const large = await getImage({ src: img, width: 1600, format: 'webp' });
+    const scale = Math.min(1, 1600 / img.width);
+    return {
+      img,
+      largeSrc: large.src,
+      w: Math.round(img.width * scale),
+      h: Math.round(img.height * scale),
+      alt: `${listing.name} — photo ${i + 1} of ${galleryImages.length}`,
+    };
+  }),
+);
+---
+
+{
+  items.length > 0 && (
+    <section id="gallery" class="mx-auto max-w-6xl px-6 py-20 md:py-28">
+      <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-brass">Gallery</p>
+      <h2 class="mt-3 font-display text-3xl md:text-4xl">Every lamplit corner</h2>
+
+      <div id="pswp-gallery" class="mt-10 gap-3 [column-fill:_balance] sm:columns-2 lg:columns-3">
+        {items.map((it) => (
+          <a
+            href={it.largeSrc}
+            data-pswp-width={it.w}
+            data-pswp-height={it.h}
+            target="_blank"
+            rel="noopener"
+            class="group mb-3 block break-inside-avoid overflow-hidden rounded-lg border border-brass/15"
+          >
+            <Picture
+              src={it.img}
+              formats={['avif', 'webp']}
+              widths={[320, 640, 960]}
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              loading="lazy"
+              alt={it.alt}
+              class="h-auto w-full transition-transform duration-350 ease-soft group-hover:scale-[1.03]"
+            />
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<script>
+  // PhotoSwipe v5. The heavy core is dynamically imported by the lightbox only
+  // when a photo is opened, so it never lands in the first-load JS budget.
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  const gallery = document.querySelector('#pswp-gallery');
+  if (gallery) {
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '#pswp-gallery',
+      children: 'a',
+      showHideAnimationType: 'fade',
+      bgOpacity: 0.92,
+      pswpModule: () => import('photoswipe'),
+    });
+    lightbox.init();
+  }
+</script>
