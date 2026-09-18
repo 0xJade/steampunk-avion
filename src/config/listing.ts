@@ -88,16 +88,6 @@ export interface ListingConfig {
     guestFavorite: boolean;
   };
 
-  /** Booking rules the calendar UI enforces client-side as a hint only. */
-  booking: {
-    /** Fallback min-nights when the provider doesn't supply per-day values. */
-    defaultMinNights: number;
-    /** Default adult count baked into the deep-link. */
-    defaultAdults: number;
-    /** How many months forward the calendar lets guests browse. */
-    monthsForward: number;
-  };
-
   /** Sibling trailers, teased in the footer. Link to host profile for now. */
   siblings: { name: string; url: string }[];
 
@@ -195,12 +185,6 @@ export const steampunkExpress: ListingConfig = {
   badges: {
     superhost: true,
     guestFavorite: true,
-  },
-
-  booking: {
-    defaultMinNights: 2,
-    defaultAdults: 2,
-    monthsForward: 12,
   },
 
   siblings: [
