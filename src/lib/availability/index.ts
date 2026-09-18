@@ -2,11 +2,13 @@ import type { AvailabilityProvider, ProviderName } from './types';
 import { IcalProvider } from './IcalProvider';
 import { MockProvider } from './MockProvider';
 import { PmsProvider } from './PmsProvider';
+import { StayingProvider } from './StayingProvider';
 
 export * from './types';
 export { IcalProvider, parseBlockedDates } from './IcalProvider';
 export { MockProvider } from './MockProvider';
 export { PmsProvider } from './PmsProvider';
+export { StayingProvider } from './StayingProvider';
 
 /**
  * Reads provider config from an env bag. On Cloudflare the runtime env is
@@ -19,12 +21,15 @@ export interface ProviderEnv {
   AVAILABILITY_CACHE_SECONDS?: string;
   PMS_API_KEY?: string;
   PMS_BASE_URL?: string;
+  STAYING_API_KEY?: string;
+  STAYING_PLATFORM?: string;
+  STAYING_BASE_URL?: string;
 }
 
 function pickName(env: ProviderEnv): ProviderName {
   const raw = (env.AVAILABILITY_PROVIDER ?? 'ical').toLowerCase();
-  if (raw === 'ical' || raw === 'mock' || raw === 'pms') return raw;
-  throw new Error(`Unknown AVAILABILITY_PROVIDER "${raw}". Use ical | mock | pms.`);
+  if (raw === 'ical' || raw === 'mock' || raw === 'pms' || raw === 'staying') return raw;
+  throw new Error(`Unknown AVAILABILITY_PROVIDER "${raw}". Use ical | mock | pms | staying.`);
 }
 
 /**
@@ -47,6 +52,21 @@ export function createProvider(env: ProviderEnv): AvailabilityProvider {
         throw new Error('AVAILABILITY_PROVIDER=pms requires PMS_API_KEY and PMS_BASE_URL.');
       }
       return new PmsProvider({ apiKey: env.PMS_API_KEY, baseUrl: env.PMS_BASE_URL });
+
+    case 'staying':
+      if (!env.STAYING_API_KEY) {
+        console.warn(
+          '[availability] AVAILABILITY_PROVIDER=staying but STAYING_API_KEY is unset — ' +
+            'falling back to MockProvider. Set STAYING_API_KEY to use real calendar data.',
+        );
+        return new MockProvider();
+      }
+      return new StayingProvider({
+        apiKey: env.STAYING_API_KEY,
+        platform: env.STAYING_PLATFORM,
+        baseUrl: env.STAYING_BASE_URL,
+        cacheSeconds,
+      });
 
     case 'ical':
     default:

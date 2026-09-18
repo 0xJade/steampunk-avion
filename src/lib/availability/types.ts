@@ -30,4 +30,4 @@ export interface AvailabilityProvider {
   ): Promise<DayAvailability[]>;
 }
 
-export type ProviderName = 'ical' | 'mock' | 'pms';
+export type ProviderName = 'ical' | 'mock' | 'pms' | 'staying';

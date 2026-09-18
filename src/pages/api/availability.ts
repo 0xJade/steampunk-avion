@@ -21,6 +21,9 @@ function resolveEnv(locals: App.Locals): ProviderEnv {
     AVAILABILITY_CACHE_SECONDS: pick('AVAILABILITY_CACHE_SECONDS'),
     PMS_API_KEY: pick('PMS_API_KEY'),
     PMS_BASE_URL: pick('PMS_BASE_URL'),
+    STAYING_API_KEY: pick('STAYING_API_KEY'),
+    STAYING_PLATFORM: pick('STAYING_PLATFORM'),
+    STAYING_BASE_URL: pick('STAYING_BASE_URL'),
   };
 }
 

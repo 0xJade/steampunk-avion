@@ -53,16 +53,42 @@ All availability goes through one interface, `AvailabilityProvider`
 
 | Value  | Provider       | Data | Pricing |
 | ------ | -------------- | ---- | ------- |
-| `ical` | `IcalProvider` (default) | Real blocked/open dates from the Airbnb export | ❌ (UI shows "See rates on Airbnb") |
+| `staying` | `StayingProvider` (**production default**) | Real availability from the [StayingAPI](https://stayingapi.com) REST API | ❌ from /v1/availability (needs /v1/price — see below) |
+| `ical` | `IcalProvider` | Real blocked/open dates from the Airbnb `.ics` export | ❌ (UI shows "See rates on Airbnb") |
 | `mock` | `MockProvider` | Deterministic fake data for dev/tests | optional |
-| `pms`  | `PmsProvider`  | **Stub** for a future channel manager (Hostaway/Hospitable/Guesty/OwnerRez) | ✅ once implemented |
+| `pms`  | `PmsProvider`  | **Stub** for a generic channel manager (Hostaway/Hospitable/Guesty/OwnerRez) | ✅ once implemented |
 
-- If `AVAILABILITY_PROVIDER=ical` but `ICS_URL` is unset, it falls back to
-  `MockProvider` and warns — so dev never breaks.
+- If the selected provider's credential is missing (`STAYING_API_KEY` or
+  `ICS_URL`), it falls back to `MockProvider` and warns — so dev never breaks.
 - **Never display an invented price.** Providers omit `nightlyPrice` when unknown;
-  the UI degrades to a "rates on Airbnb" message. To add real pricing later,
-  implement `PmsProvider` (its TODOs sketch the shape) and set `PMS_API_KEY` /
-  `PMS_BASE_URL`.
+  the UI degrades to a "rates on Airbnb" message.
+
+### StayingAPI provider (default)
+
+Set these env vars (get a key at https://stayingapi.com):
+
+```bash
+AVAILABILITY_PROVIDER=staying
+STAYING_API_KEY=stay_live_...   # stay_test_ = free deterministic sandbox
+STAYING_PLATFORM=airbnb          # optional, defaults to airbnb
+# STAYING_BASE_URL=              # optional, defaults to https://api.stayingapi.com
+```
+
+How it works (`src/lib/availability/StayingProvider.ts`):
+- Calls `GET /v1/availability?platform=airbnb&listingId=…&startDate=…&endDate=…`
+  with `Authorization: Bearer <key>`, maps each day → `available` + `minNights`.
+- Handles both response modes: **sync** (HTTP 200, sandbox/cache) and **async**
+  (HTTP 202 + `jobId`, polled at `/v1/jobs/{jobId}` until `completed`).
+- **Sandbox note:** a `stay_test_` key returns fixed fixture dates and **0
+  credits** — great for verifying the wiring, but the calendar will look fully
+  booked because those dates don't match the live window. Use a `stay_live_`
+  key for real data.
+- **Pricing:** `/v1/availability` returns no price, so `nightlyPrice` is omitted.
+  To add real rates, extend the provider to also call `/v1/price` (there's a
+  `TODO` marking the spot) and merge `nightlyPrice` + `currency`.
+
+To use the Airbnb `.ics` export instead, set `AVAILABILITY_PROVIDER=ical` and
+`ICS_URL` (see below).
 
 ---
 
@@ -149,10 +175,12 @@ The build is complete and deploy-ready. These four items are **drop-in — no co
 changes** — but the site isn't truthful/finished until they're done. (Search the
 code for `TODO:REPLACE` to jump to the config spots.)
 
-- [ ] **`ICS_URL` secret** — **most important.** Until it's set, the deployed
-      calendar shows *mock* availability, not real dates. Add it as an encrypted
-      env var in Cloudflare (or `npx wrangler pages secret put ICS_URL`).
-      See [Where to put the `.ics` URL](#where-to-put-the-ics-url).
+- [ ] **`STAYING_API_KEY` secret** — **most important.** The default provider is
+      StayingAPI. Until a `stay_live_` key is set, the deployed calendar falls
+      back to *mock* data. Add it as an encrypted env var in Cloudflare (or
+      `npx wrangler pages secret put STAYING_API_KEY`). A `stay_test_` sandbox
+      key only returns fixture dates. (Prefer the Airbnb `.ics` export instead?
+      Set `AVAILABILITY_PROVIDER=ical` + `ICS_URL`.)
 - [ ] **Tamara's host ID** — the last `TODO:REPLACE` in
       `src/config/listing.ts` (`hostProfileUrl` + the three sibling links in the
       footer). Grab it from the host profile URL on Airbnb.

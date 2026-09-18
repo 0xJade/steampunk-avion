@@ -12,11 +12,14 @@ compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
 # ── Non-secret config (safe to commit). ──────────────────────────────────────
-# The .ics token is a SECRET — do NOT put ICS_URL here. Set it as an encrypted
-# secret in the dashboard (Settings → Environment variables → Add, "Encrypt"),
-# or with: npx wrangler pages secret put ICS_URL
+# Secrets (STAYING_API_KEY, or ICS_URL if you use the .ics provider) do NOT go
+# here — set them as encrypted env vars in the dashboard, or with:
+#   npx wrangler pages secret put STAYING_API_KEY
 [vars]
-AVAILABILITY_PROVIDER = "ical"
+# Using the StayingAPI REST provider. Set STAYING_API_KEY (a stay_live_ key) as
+# an encrypted secret. Without a key this falls back to mock data, not a crash.
+AVAILABILITY_PROVIDER = "staying"
+STAYING_PLATFORM = "airbnb"
 AVAILABILITY_CACHE_SECONDS = "1200"
 
 # ── Optional: sessions KV binding. ───────────────────────────────────────────
