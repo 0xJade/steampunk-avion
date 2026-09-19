@@ -21,7 +21,7 @@ const heading = listing.copy?.spaceHeading ?? 'A parlor on wheels';
         {description.map((p) => <p>{p}</p>)}
       </div>
       <p class="mt-6 font-typewriter text-sm text-parchment-d">
-        Sleeps {capacity.guests} · {capacity.sleeping} · {capacity.baths} bath
+        Sleeps {capacity.guests} · {capacity.sleeping} · {capacity.baths} bath{capacity.baths > 1 ? 's' : ''}
       </p>
     </div>
 
