@@ -12,6 +12,11 @@ node_modules/
 .env.*
 !.env.example
 
+# private per-property descriptions — kept local, not published to GitHub.
+# The tracked _template.md is the exception so the folder/format survive.
+src/data/descriptions/*.md
+!src/data/descriptions/_template.md
+
 # editor / os
 .DS_Store
 *.log
