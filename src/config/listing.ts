@@ -1,13 +1,13 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * LISTING CONFIG — the single source of truth for all copy and data.
+ * LISTING CONFIG, the single source of truth for all copy and data.
  * Components read from here; there are no hardcoded strings in the markup.
  *
  * TO ADD A SECOND TRAILER (e.g. Hot Tamale):
  *   1. Copy this file to `src/config/hot-tamale.ts`, edit the values.
  *   2. Drop its photos in `src/assets/hot-tamale/`.
  *   3. Point the active export below at it (or select by an env flag).
- * No component changes required — that's the point.
+ * No component changes required, that's the point.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -52,7 +52,7 @@ export interface PropertyCopy {
 export interface ListingConfig {
   /** URL slug, e.g. "steampunk-express". Also the src/assets/<slug>/ folder. */
   slug: string;
-  /** trailer | townhouse — tweaks framing (e.g. "trailer" vs "townhouse"). */
+  /** trailer | townhouse, tweaks framing (e.g. "trailer" vs "townhouse"). */
   type?: 'trailer' | 'townhouse';
   /** Accent color (hex) for this property's section kickers. Falls back to brass. */
   accent?: string;
@@ -62,7 +62,7 @@ export interface ListingConfig {
   listingId: string;
   /** Canonical Airbnb listing URL (no query). */
   airbnbUrl: string;
-  /** Host profile URL — used by the "More Enchanted Escapes" footer teaser. */
+  /** Host profile URL, used by the "More Enchanted Escapes" footer teaser. */
   hostProfileUrl: string;
   /**
    * Airbnb .ics export URL. Read from env so the secret token never lands in
@@ -117,7 +117,7 @@ export interface ListingConfig {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Steampunk Express — the one trailer this build covers.
+// Steampunk Express, the one trailer this build covers.
 // ⚠️ PLACEHOLDERS you must supply: listingId, airbnbUrl, hostProfileUrl,
 //    sibling URLs, seo.siteUrl/ogImage. Search "TODO:REPLACE".
 // ─────────────────────────────────────────────────────────────────────────────
@@ -126,18 +126,18 @@ export const steampunkExpress: ListingConfig = {
   type: 'trailer',
   listingId: '1289153526360569217', // Airbnb room id
   airbnbUrl: 'https://www.airbnb.com/rooms/1289153526360569217',
-  hostProfileUrl: 'https://www.airbnb.com/users/show/TODO_REPLACE_HOST_ID', // TODO:REPLACE — still need Tamara's host id
+  hostProfileUrl: 'https://www.airbnb.com/users/show/TODO_REPLACE_HOST_ID', // TODO:REPLACE, still need Tamara's host id
   icsUrl: import.meta.env.ICS_URL, // set in .env / Cloudflare env, never committed
 
   name: 'Steampunk Express',
-  tagline: 'A lamplit Victorian escape in a restored 1980s Avion — minutes from Arches.',
+  tagline: 'A lamplit Victorian escape in a restored 1980s Avion, minutes from Arches.',
   description: [
     'Step inside a fully restored 1980s Avion travel trailer reimagined as a ' +
-      'dim, warm, lamplit parlor — oiled walnut, oxidized brass, and purple ' +
+      'dim, warm, lamplit parlor, oiled walnut, oxidized brass, and purple ' +
       'apothecary glass glowing under a single Edison filament.',
     'Sleeps four with a full kitchen, a private bath with a proper tub and ' +
-      'shower, and a quiet patio under the desert sky. Moab’s red-rock icons — ' +
-      'Arches, Canyonlands, and Dead Horse Point — are all a short drive away.',
+      'shower, and a quiet patio under the desert sky. Moab’s red-rock icons, ' +
+      'Arches, Canyonlands, and Dead Horse Point, are all a short drive away.',
   ],
 
   capacity: {
@@ -151,7 +151,7 @@ export const steampunkExpress: ListingConfig = {
   amenities: [
     { icon: 'sleeps', label: 'Sleeps 4' },
     { icon: 'kitchen', label: 'Full kitchen' },
-    { icon: 'bath', label: 'Private bath — tub + shower' },
+    { icon: 'bath', label: 'Private bath, tub + shower' },
     { icon: 'climate', label: 'Mini-split AC & heat' },
     { icon: 'wifi', label: 'Fast WiFi' },
     { icon: 'tv', label: 'Smart TV' },
@@ -162,9 +162,9 @@ export const steampunkExpress: ListingConfig = {
 
   location: {
     blurb:
-      'Just south of downtown Moab, next to the Lazy Lizard — quiet, private, ' +
+      'Just south of downtown Moab, next to the Lazy Lizard, quiet, private, ' +
       'and close to everything.',
-    lat: 38.5497, // TODO:REPLACE — approximate; set exact if you want the pin tight
+    lat: 38.5497, // TODO:REPLACE, approximate; set exact if you want the pin tight
     lng: -109.5498, // TODO:REPLACE
     driveTimes: [
       { place: 'Arches National Park', minutes: 10 },
@@ -179,7 +179,7 @@ export const steampunkExpress: ListingConfig = {
     quotes: [
       {
         quote:
-          'Photos don’t do it justice. Every detail is thought through — it ' +
+          'Photos don’t do it justice. Every detail is thought through, it ' +
           'feels like sleeping inside a beautiful antique.',
         author: 'Guest review', // TODO:REPLACE with real names/first initials if desired
         context: 'Airbnb',

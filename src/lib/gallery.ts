@@ -2,7 +2,7 @@ import type { ImageMetadata } from 'astro';
 
 /**
  * Per-property image loader. Every image under src/assets/<slug>/ is picked up
- * via import.meta.glob — drop a file in, it shows up. Images are grouped by
+ * via import.meta.glob, drop a file in, it shows up. Images are grouped by
  * their folder name (the property slug).
  *
  * Conventions per folder:

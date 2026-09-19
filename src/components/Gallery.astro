@@ -27,7 +27,7 @@ const items = await Promise.all(
       largeSrc: large.src,
       w: Math.round(img.width * scale),
       h: Math.round(img.height * scale),
-      alt: `${name} — photo ${i + 1} of ${galleryImages.length}`,
+      alt: `${name}, photo ${i + 1} of ${galleryImages.length}`,
     };
   }),
 );

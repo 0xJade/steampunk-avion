@@ -5,7 +5,7 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    Self-hosted fonts. Place subset .woff2 files in /public/fonts/ (see README
    for the subsetting command). font-display: swap keeps text visible on Fast 3G.
-   If a file is missing the stack falls back gracefully — nothing breaks.
+   If a file is missing the stack falls back gracefully, nothing breaks.
    ───────────────────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: 'Cinzel';
@@ -15,7 +15,7 @@
   font-display: swap;
 }
 @font-face {
-  /* Inter ships as a variable font — one file covers the whole weight range. */
+  /* Inter ships as a variable font, one file covers the whole weight range. */
   font-family: 'Inter';
   src: url('/fonts/inter-latin.woff2') format('woff2');
   font-weight: 100 900;
@@ -112,7 +112,7 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    ONE texture: an aged-paper / film-grain overlay at low opacity. Fixed, behind
    content, pointer-events off. Kept as a tiny inline SVG data URI so it costs no
-   extra request. Turned off under reduced-motion? No — it's static, so it stays.
+   extra request. Turned off under reduced-motion? No, it's static, so it stays.
    ───────────────────────────────────────────────────────────────────────────── */
 .grain::before {
   content: '';

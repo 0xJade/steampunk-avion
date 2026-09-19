@@ -91,7 +91,7 @@ const descriptionModules = import.meta.glob<{ frontmatter: PropertyFrontmatter }
 const markdownProperties: ListingConfig[] = Object.entries(descriptionModules)
   .filter(([path]) => !/_template|example/.test(path))
   .map(([, mod]) => mod.frontmatter)
-  // Only build a property from a fully curated file — skip the ones still on the
+  // Only build a property from a fully curated file, skip the ones still on the
   // placeholder frontmatter so their missing nested fields can't crash the build.
   .filter(
     (fm): fm is PropertyFrontmatter =>
@@ -101,7 +101,10 @@ const markdownProperties: ListingConfig[] = Object.entries(descriptionModules)
 
 /** All properties: Steampunk (config) + markdown-driven, siblings cross-linked. */
 export const properties: ListingConfig[] = (() => {
-  const combined = [steampunkExpress, ...markdownProperties];
+  // Trailers first, townhouse(s) last (stable sort keeps prior order otherwise).
+  const combined = [steampunkExpress, ...markdownProperties].sort(
+    (a, b) => Number(a.type === 'townhouse') - Number(b.type === 'townhouse'),
+  );
   return combined.map((p) => ({ ...p, siblings: siblingsFor(p.slug, combined) }));
 })();
 
