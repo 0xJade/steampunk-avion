@@ -1,15 +1,19 @@
 ---
-import { listing } from '@config/listing';
+import { listing as defaultListing, type ListingConfig } from '@config/listing';
 import Icon from './icons/Icon.astro';
 
-const { reviews, airbnbUrl } = listing;
+interface Props {
+  listing?: ListingConfig;
+}
+const { listing = defaultListing } = Astro.props;
+const { reviews, airbnbUrl, badges } = listing;
 const allReviewsUrl = `${airbnbUrl}/reviews`;
 ---
 
 <section id="reviews" class="bg-plum/40 py-20 md:py-28">
   <div class="mx-auto max-w-5xl px-6">
     <div class="flex flex-col items-center text-center">
-      <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-brass">
+      <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
         Reviews
       </p>
       <div class="mt-4 flex items-center gap-3">
@@ -19,7 +23,7 @@ const allReviewsUrl = `${airbnbUrl}/reviews`;
         <span class="font-display text-2xl text-parchment">{reviews.rating.toFixed(2)}</span>
       </div>
       <p class="mt-2 text-parchment-d">
-        {reviews.count} reviews · Guest Favorite
+        {reviews.count} reviews{badges.guestFavorite ? ' · Guest Favorite' : ''}
       </p>
     </div>
 

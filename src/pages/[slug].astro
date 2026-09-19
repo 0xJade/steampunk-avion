@@ -1,0 +1,95 @@
+---
+import Base from '../layouts/Base.astro';
+import TheSpace from '@components/TheSpace.astro';
+import Location from '@components/Location.astro';
+import Reviews from '@components/Reviews.astro';
+import FooterCTA from '@components/FooterCTA.astro';
+import Gallery from '@components/Gallery.astro';
+import { Picture } from 'astro:assets';
+import { getPropertyHero, hasPhotos } from '@lib/gallery';
+import { properties } from '@lib/properties';
+import type { ListingConfig } from '@config/listing';
+
+export function getStaticPaths() {
+  return properties.map((property) => ({
+    params: { slug: property.slug },
+    props: { property },
+  }));
+}
+
+interface Props {
+  property: ListingConfig;
+}
+const { property } = Astro.props;
+
+const heroImage = getPropertyHero(property.slug);
+const showHero = hasPhotos(property.slug);
+const accentStyle = property.accent ? `--accent:${property.accent}` : undefined;
+const galleryHeading = property.copy?.galleryHeading ?? 'Every detail';
+---
+
+<Base
+  title={`${property.name} · Moab, Utah`}
+  description={property.tagline}
+  listing={property}
+  canonicalPath={`/${property.slug}`}
+>
+  <div style={accentStyle}>
+    <!-- HERO -->
+    <header
+      class="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-plum/40 via-ink to-ink px-6 py-24 text-center"
+    >
+      {
+        showHero && heroImage && (
+          <>
+            <Picture
+              src={heroImage}
+              formats={['avif', 'webp']}
+              widths={[768, 1280, 1920]}
+              sizes="100vw"
+              loading="eager"
+              fetchpriority="high"
+              alt={`${property.name} in Moab, Utah`}
+              pictureAttributes={{ class: 'absolute inset-0 -z-10 h-full w-full' }}
+              class="h-full w-full object-cover"
+            />
+            <div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/40 to-ink/90" aria-hidden="true" />
+          </>
+        )
+      }
+      <a
+        href="/"
+        class="font-typewriter text-sm uppercase tracking-[0.2em] text-[var(--accent)] drop-shadow underline-offset-4 hover:underline"
+      >
+        Enchanted Escapes · Moab, Utah
+      </a>
+      <h1 class="mt-4 font-display text-5xl md:text-7xl">{property.name}</h1>
+      <p class="mx-auto mt-6 max-w-xl text-lg text-parchment-d">{property.tagline}</p>
+
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-parchment-d">
+        <span class="text-brass-lit">★ {property.reviews.rating.toFixed(2)}</span>
+        <span aria-hidden="true">·</span>
+        <span>{property.reviews.count} reviews</span>
+        {property.badges.superhost && (<><span aria-hidden="true">·</span><span>Superhost</span></>)}
+        {property.badges.guestFavorite && (<><span aria-hidden="true">·</span><span>Guest Favorite</span></>)}
+      </div>
+
+      <a
+        href={property.airbnbUrl}
+        target="_blank"
+        rel="noopener"
+        class="mt-10 inline-block rounded-md bg-ember px-6 py-3 font-body font-semibold text-ink shadow-ember transition-colors duration-250 ease-soft hover:bg-brass-lit"
+      >
+        Check availability on Airbnb
+      </a>
+    </header>
+
+    <hr class="hairline mx-auto max-w-5xl" />
+
+    <TheSpace listing={property} />
+    <Gallery slug={property.slug} name={property.name} heading={galleryHeading} />
+    <Location listing={property} />
+    <Reviews listing={property} />
+    <FooterCTA listing={property} />
+  </div>
+</Base>

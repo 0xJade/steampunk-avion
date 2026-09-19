@@ -1,22 +1,24 @@
 ---
 import { Image } from 'astro:assets';
-import { listing } from '@config/listing';
+import { listing as defaultListing, type ListingConfig } from '@config/listing';
+import { getPropertyMap } from '@lib/gallery';
 
+interface Props {
+  listing?: ListingConfig;
+}
+const { listing = defaultListing } = Astro.props;
 const { location } = listing;
 
-// Detect a dropped-in static map without breaking the build when it's absent.
-const mapModules = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/steampunk-express/map.{png,jpg,jpeg,webp,avif}',
-  { eager: true },
-);
-const mapImage = Object.values(mapModules)[0]?.default;
+// Optional static map dropped in as src/assets/<slug>/map.* ; absent is fine.
+const mapImage = getPropertyMap(listing.slug);
+const heading = listing.copy?.locationHeading ?? 'Basecamp for red rock';
 
 const mapsLink = `https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`;
 ---
 
 <section id="location" class="mx-auto max-w-5xl px-6 py-20 md:py-28">
-  <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-brass">Location</p>
-  <h2 class="mt-3 font-display text-3xl md:text-4xl">Basecamp for red rock</h2>
+  <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-[var(--accent)]">Location</p>
+  <h2 class="mt-3 font-display text-3xl md:text-4xl">{heading}</h2>
   <p class="mt-4 max-w-2xl text-parchment-d">{location.blurb}</p>
 
   <div class="mt-10 grid gap-8 md:grid-cols-[1.3fr_1fr] md:items-center">
@@ -37,7 +39,7 @@ const mapsLink = `https://www.google.com/maps/search/?api=1&query=${location.lat
           <div class="flex aspect-[4/3] items-center justify-center bg-ink-2 p-8 text-center">
             <p class="font-typewriter text-sm text-parchment-d">
               Static map goes here —<br />drop <code>map.png</code> in
-              <code>src/assets/steampunk-express/</code>.
+              <code>src/assets/{listing.slug}/</code>.
             </p>
           </div>
         )

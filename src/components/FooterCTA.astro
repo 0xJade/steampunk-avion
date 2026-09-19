@@ -1,17 +1,21 @@
 ---
-import { listing } from '@config/listing';
+import { listing as defaultListing, type ListingConfig } from '@config/listing';
 import Icon from './icons/Icon.astro';
 
+interface Props {
+  listing?: ListingConfig;
+}
+const { listing = defaultListing } = Astro.props;
 const { name, airbnbUrl, hostProfileUrl, siblings } = listing;
+const heading = listing.copy?.footerHeading ?? 'Your desert parlor awaits';
+const blurb = listing.copy?.footerBlurb ?? 'Check dates and book securely on Airbnb.';
 const year = new Date().getFullYear();
 ---
 
 <footer id="book" class="border-t border-brass/20 bg-ink-2">
   <div class="mx-auto max-w-5xl px-6 py-20 text-center md:py-28">
-    <h2 class="font-display text-3xl md:text-4xl">Your desert parlor awaits</h2>
-    <p class="mx-auto mt-4 max-w-xl text-parchment-d">
-      Check the calendar for open dates, then book securely on Airbnb.
-    </p>
+    <h2 class="font-display text-3xl md:text-4xl">{heading}</h2>
+    <p class="mx-auto mt-4 max-w-xl text-parchment-d">{blurb}</p>
 
     <a
       href={airbnbUrl}
@@ -25,11 +29,11 @@ const year = new Date().getFullYear();
 
     <div class="mx-auto mt-16 max-w-2xl">
       <hr class="hairline" />
-      <p class="mt-8 font-typewriter text-xs uppercase tracking-[0.2em] text-brass">
+      <p class="mt-8 font-typewriter text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
         More Enchanted Escapes
       </p>
       <p class="mt-2 text-sm text-parchment-d">
-        Sibling trailers from the same host, also in Moab.
+        More themed stays from the same host, also in Moab.
       </p>
       <ul class="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2">
         {
@@ -37,8 +41,6 @@ const year = new Date().getFullYear();
             <li>
               <a
                 href={s.url}
-                target="_blank"
-                rel="noopener"
                 class="font-display text-parchment underline-offset-4 transition-colors duration-250 ease-soft hover:text-brass-lit hover:underline"
               >
                 {s.name}

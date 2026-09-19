@@ -1,45 +1,59 @@
 import type { ImageMetadata } from 'astro';
 
 /**
- * Central image loader for a listing's photo set. Everything is pulled from the
- * assets folder via import.meta.glob — drop a file in, it shows up; delete one,
- * it's gone. No manifest to maintain.
+ * Per-property image loader. Every image under src/assets/<slug>/ is picked up
+ * via import.meta.glob — drop a file in, it shows up. Images are grouped by
+ * their folder name (the property slug).
  *
- * The HERO is chosen by convention: a file literally named `hero.*` wins;
- * otherwise we fall back to the exterior shot, then to the first image.
+ * Conventions per folder:
+ *   • HERO: a file named `hero.*` wins, else `*avion_1*`/`*exterior*`, else the
+ *     first image (natural sort, so 2 comes before 10).
+ *   • A file named `map.*` is treated as the Location static map, not a gallery
+ *     photo.
  */
 const modules = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/steampunk-express/*.{png,jpg,jpeg,webp,avif}',
+  '/src/assets/*/*.{png,jpg,jpeg,webp,avif}',
   { eager: true },
 );
 
 interface Entry {
-  path: string;
+  slug: string;
+  base: string;
   image: ImageMetadata;
 }
 
-// Natural sort so steampunk_2 comes before steampunk_10.
-const all: Entry[] = Object.entries(modules)
-  .map(([path, mod]) => ({ path, image: mod.default }))
-  .sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }));
+const all: Entry[] = Object.entries(modules).map(([path, mod]) => {
+  const m = path.match(/\/src\/assets\/([^/]+)\/([^/]+)$/);
+  return { slug: m?.[1] ?? '', base: m?.[2] ?? path, image: mod.default };
+});
 
-const basename = (p: string) => p.split('/').pop() ?? p;
+const isMap = (base: string) => /(^|\/)map\.(png|jpe?g|webp|avif)$/i.test(base);
 
-function pickHero(entries: Entry[]): Entry | undefined {
-  return (
-    entries.find((e) => /(^|\/)hero\.(png|jpe?g|webp|avif)$/i.test(e.path)) ??
-    entries.find((e) => /avion_1|exterior/i.test(basename(e.path))) ??
-    entries[0]
-  );
+/** Gallery photos for a property, natural-sorted, excluding the map image. */
+function galleryEntries(slug: string): Entry[] {
+  return all
+    .filter((e) => e.slug === slug && !isMap(e.base))
+    .sort((a, b) => a.base.localeCompare(b.base, undefined, { numeric: true }));
 }
 
-const hero = pickHero(all);
+export function getPropertyImages(slug: string): ImageMetadata[] {
+  return galleryEntries(slug).map((e) => e.image);
+}
 
-/** The exterior/full-bleed hero image (or undefined if the folder is empty). */
-export const heroImage: ImageMetadata | undefined = hero?.image;
+export function getPropertyHero(slug: string): ImageMetadata | undefined {
+  const entries = galleryEntries(slug);
+  return (
+    entries.find((e) => /(^|\/)hero\.(png|jpe?g|webp|avif)$/i.test(e.base)) ??
+    entries.find((e) => /avion_1|exterior/i.test(e.base)) ??
+    entries[0]
+  )?.image;
+}
 
-/** All images intended for the gallery grid (hero included — it's a nice shot). */
-export const galleryImages: ImageMetadata[] = all.map((e) => e.image);
+/** The Location static map for a property, if a map.* file exists. */
+export function getPropertyMap(slug: string): ImageMetadata | undefined {
+  return all.find((e) => e.slug === slug && isMap(e.base))?.image;
+}
 
-/** True when no photos have been dropped in yet (drives graceful fallbacks). */
-export const hasPhotos = all.length > 0;
+export function hasPhotos(slug: string): boolean {
+  return galleryEntries(slug).length > 0;
+}

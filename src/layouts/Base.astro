@@ -1,55 +1,68 @@
 ---
 import '../styles/global.css';
-import { listing } from '@config/listing';
+import Header from '@components/Header.astro';
+import { listing as defaultListing, type ListingConfig } from '@config/listing';
 
 interface Props {
   title?: string;
   description?: string;
+  /** The property this page represents (drives JSON-LD/OG). Omit for the home page. */
+  listing?: ListingConfig;
+  /** Path for the canonical URL, e.g. "/diner-and-movie". */
+  canonicalPath?: string;
+  /** "lodging" emits LodgingBusiness JSON-LD; "none" skips it (home overview). */
+  schema?: 'lodging' | 'none';
 }
 
 const {
-  title = `${listing.name} · Moab, Utah`,
-  description = listing.tagline,
+  title = `${defaultListing.name} · Moab, Utah`,
+  description = defaultListing.tagline,
+  listing = defaultListing,
+  canonicalPath = '/',
+  schema = 'lodging',
 } = Astro.props;
 
-const canonical = listing.seo.siteUrl;
+const canonical = new URL(canonicalPath, listing.seo.siteUrl).href;
 const ogImage = listing.seo.ogImage;
 
-// Schema.org: LodgingBusiness + AggregateRating. Kept in sync with config so
-// the rating never drifts from what's shown on the page.
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'LodgingBusiness',
-  name: listing.name,
-  description: listing.tagline,
-  url: canonical,
-  image: ogImage,
-  petsAllowed: false,
-  numberOfRooms: listing.capacity.bedrooms,
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: 'Moab',
-    addressRegion: 'UT',
-    addressCountry: 'US',
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: listing.location.lat,
-    longitude: listing.location.lng,
-  },
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: listing.reviews.rating,
-    reviewCount: listing.reviews.count,
-    bestRating: 5,
-    worstRating: 1,
-  },
-  amenityFeature: listing.amenities.map((a) => ({
-    '@type': 'LocationFeatureSpecification',
-    name: a.label,
-    value: true,
-  })),
-};
+// Schema.org: LodgingBusiness + AggregateRating, per property. Omitted on the
+// home overview (schema="none").
+const jsonLd =
+  schema === 'lodging'
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'LodgingBusiness',
+        name: listing.name,
+        description: listing.tagline,
+        url: canonical,
+        image: ogImage,
+        petsAllowed: false,
+        numberOfRooms: listing.capacity.bedrooms,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Moab',
+          addressRegion: 'UT',
+          addressCountry: 'US',
+        },
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: listing.location.lat,
+          longitude: listing.location.lng,
+        },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: listing.reviews.rating,
+          reviewCount: listing.reviews.count,
+          bestRating: 5,
+          worstRating: 1,
+        },
+        amenityFeature: listing.amenities.map((a) => ({
+          '@type': 'LocationFeatureSpecification',
+          name: a.label,
+          value: true,
+        })),
+      }
+    : null;
 ---
 
 <!doctype html>
@@ -94,9 +107,10 @@ const jsonLd = {
 
     <meta name="theme-color" content="#14100D" />
 
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body class="grain">
+    <Header />
     <slot />
   </body>
 </html>

@@ -40,7 +40,24 @@ export interface DriveTime {
   minutes: number;
 }
 
+/** Per-property section copy. Any omitted field falls back to a default. */
+export interface PropertyCopy {
+  spaceHeading?: string;
+  galleryHeading?: string;
+  locationHeading?: string;
+  footerHeading?: string;
+  footerBlurb?: string;
+}
+
 export interface ListingConfig {
+  /** URL slug, e.g. "steampunk-express". Also the src/assets/<slug>/ folder. */
+  slug: string;
+  /** trailer | townhouse — tweaks framing (e.g. "trailer" vs "townhouse"). */
+  type?: 'trailer' | 'townhouse';
+  /** Accent color (hex) for this property's section kickers. Falls back to brass. */
+  accent?: string;
+  /** Optional per-property heading overrides. */
+  copy?: PropertyCopy;
   /** Airbnb numeric room id. Powers every booking deep-link. */
   listingId: string;
   /** Canonical Airbnb listing URL (no query). */
@@ -105,6 +122,8 @@ export interface ListingConfig {
 //    sibling URLs, seo.siteUrl/ogImage. Search "TODO:REPLACE".
 // ─────────────────────────────────────────────────────────────────────────────
 export const steampunkExpress: ListingConfig = {
+  slug: 'steampunk-express',
+  type: 'trailer',
   listingId: '1289153526360569217', // Airbnb room id
   airbnbUrl: 'https://www.airbnb.com/rooms/1289153526360569217',
   hostProfileUrl: 'https://www.airbnb.com/users/show/TODO_REPLACE_HOST_ID', // TODO:REPLACE — still need Tamara's host id

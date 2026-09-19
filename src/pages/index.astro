@@ -1,72 +1,134 @@
 ---
 import Base from '../layouts/Base.astro';
-import TheSpace from '@components/TheSpace.astro';
-import Location from '@components/Location.astro';
-import Reviews from '@components/Reviews.astro';
-import FooterCTA from '@components/FooterCTA.astro';
-import Gallery from '@components/Gallery.astro';
 import { Picture } from 'astro:assets';
-import { heroImage, hasPhotos } from '@lib/gallery';
-import { listing } from '@config/listing';
+import { properties, pathForSlug } from '@lib/properties';
+import { getPropertyHero } from '@lib/gallery';
+import { listing as brand } from '@config/listing';
 
-// Every CTA links out to the Airbnb listing — booking happens there.
+// Enchanted Escapes overview — brand landing + a card per property.
+const cards = properties.map((p) => ({
+  property: p,
+  href: pathForSlug(p.slug),
+  hero: getPropertyHero(p.slug),
+}));
+
+const heroBackdrop = getPropertyHero('steampunk-express');
+const year = new Date().getFullYear();
 ---
 
-<Base>
-  <!-- HERO -->
+<Base
+  title="Enchanted Escapes · Restored vintage trailers in Moab, Utah"
+  description="A collection of lovingly restored vintage Avion trailers in Moab, Utah — each with its own theme, minutes from Arches, Canyonlands, and Dead Horse Point."
+  schema="none"
+  canonicalPath="/"
+>
+  <!-- BRAND HERO -->
   <header
-    class="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-plum/40 via-ink to-ink px-6 py-24 text-center"
+    class="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-plum/40 via-ink to-ink px-6 py-24 text-center"
   >
     {
-      hasPhotos && heroImage && (
+      heroBackdrop && (
         <>
           <Picture
-            src={heroImage}
+            src={heroBackdrop}
             formats={['avif', 'webp']}
             widths={[768, 1280, 1920]}
             sizes="100vw"
             loading="eager"
             fetchpriority="high"
-            alt={`${listing.name} — the Avion trailer and private patio in Moab`}
+            alt=""
             pictureAttributes={{ class: 'absolute inset-0 -z-10 h-full w-full' }}
             class="h-full w-full object-cover"
           />
-          {/* Scrim for WCAG-AA text contrast over the photo. */}
-          <div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/40 to-ink/90" aria-hidden="true" />
+          <div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/80 via-ink/60 to-ink/95" aria-hidden="true" />
         </>
       )
     }
     <p class="font-typewriter text-sm uppercase tracking-[0.2em] text-brass drop-shadow">
-      Enchanted Escapes · Moab, Utah
+      Moab, Utah
     </p>
-    <h1 class="mt-4 font-display text-5xl md:text-7xl">{listing.name}</h1>
-    <p class="mx-auto mt-6 max-w-xl text-lg text-parchment-d">{listing.tagline}</p>
-
-    <div class="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-parchment-d">
-      <span class="text-brass-lit">★ {listing.reviews.rating.toFixed(2)}</span>
-      <span aria-hidden="true">·</span>
-      <span>{listing.reviews.count} reviews</span>
-      {listing.badges.superhost && (<><span aria-hidden="true">·</span><span>Superhost</span></>)}
-      {listing.badges.guestFavorite && (<><span aria-hidden="true">·</span><span>Guest Favorite</span></>)}
-    </div>
-
-    <a
-      href={listing.airbnbUrl}
-      target="_blank"
-      rel="noopener"
-      class="mt-10 inline-block rounded-md bg-ember px-6 py-3 font-body font-semibold text-ink shadow-ember transition-colors duration-250 ease-soft hover:bg-brass-lit"
-    >
-      Check availability on Airbnb
-    </a>
+    <h1 class="mt-4 font-display text-5xl md:text-7xl">Enchanted Escapes</h1>
+    <p class="mx-auto mt-6 max-w-2xl text-lg text-parchment-d">
+      A collection of lovingly restored vintage Avion trailers — each with its own
+      theme — moments from Arches, Canyonlands, and Dead Horse Point.
+    </p>
+    <p class="mt-4 font-typewriter text-sm text-parchment-d">Hosted by Tamara · Superhost</p>
   </header>
 
   <hr class="hairline mx-auto max-w-5xl" />
 
-  <TheSpace />
+  <!-- PROPERTY GRID -->
+  <section class="mx-auto max-w-6xl px-6 py-20 md:py-28">
+    <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-brass">The Stays</p>
+    <h2 class="mt-3 font-display text-3xl md:text-4xl">Choose your escape</h2>
 
-  <Gallery />
+    <ul class="mt-10 grid gap-8 sm:grid-cols-2">
+      {
+        cards.map(({ property, href, hero }) => (
+          <li class="card-bulb overflow-hidden rounded-lg">
+            <a href={href} class="group block">
+              {hero && (
+                <div class="aspect-[4/3] overflow-hidden">
+                  <Picture
+                    src={hero}
+                    formats={['avif', 'webp']}
+                    widths={[480, 768, 1024]}
+                    sizes="(min-width: 640px) 45vw, 100vw"
+                    loading="lazy"
+                    alt={`${property.name} in Moab, Utah`}
+                    class="h-full w-full object-cover transition-transform duration-350 ease-soft group-hover:scale-[1.03]"
+                  />
+                </div>
+              )}
+              <div class="p-6">
+                <h3 class="font-display text-2xl text-parchment group-hover:text-brass-lit">
+                  {property.name}
+                </h3>
+                <p class="mt-2 text-sm text-parchment-d">{property.tagline}</p>
+                <p class="mt-3 font-typewriter text-xs text-parchment-d">
+                  ★ {property.reviews.rating.toFixed(2)} · {property.reviews.count} reviews
+                </p>
+              </div>
+            </a>
+            <div class="flex items-center justify-between gap-4 px-6 pb-6">
+              <a
+                href={href}
+                class="font-body text-sm text-brass-lit underline-offset-4 hover:text-filament hover:underline"
+              >
+                View property →
+              </a>
+              <a
+                href={property.airbnbUrl}
+                target="_blank"
+                rel="noopener"
+                class="rounded-md bg-ember px-4 py-2 font-body text-sm font-semibold text-ink transition-colors duration-250 ease-soft hover:bg-brass-lit"
+              >
+                Book on Airbnb
+              </a>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
 
-  <Location />
-  <Reviews />
-  <FooterCTA />
+  <footer class="border-t border-brass/20 bg-ink-2">
+    <div class="mx-auto max-w-5xl px-6 py-16 text-center">
+      <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-brass">More Enchanted Escapes</p>
+      <p class="mx-auto mt-3 max-w-xl text-parchment-d">
+        More themed trailers are in the works. See everything on Tamara’s Airbnb profile.
+      </p>
+      <a
+        href={brand.hostProfileUrl}
+        target="_blank"
+        rel="noopener"
+        class="mt-5 inline-block font-body text-brass-lit underline-offset-4 hover:text-filament hover:underline"
+      >
+        See all of Tamara’s trailers →
+      </a>
+      <p class="mt-12 text-xs text-parchment-d">
+        © {year} Enchanted Escapes. Not affiliated with Airbnb, Inc. Booking and payment happen on Airbnb.
+      </p>
+    </div>
+  </footer>
 </Base>

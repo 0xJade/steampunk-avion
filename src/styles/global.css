@@ -44,6 +44,9 @@
   --parchment: #ede0c8;
   --parchment-d: #b9ab93;
 
+  /* Per-property accent for section kickers; overridden per page, defaults brass. */
+  --accent: #b3893f;
+
   color-scheme: dark;
 }
 

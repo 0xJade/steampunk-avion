@@ -1,0 +1,36 @@
+---
+import { properties, pathForSlug } from '@lib/properties';
+
+// One nav entry per curated property (grows as more are added).
+const nav = properties.map((p) => ({ name: p.name, href: pathForSlug(p.slug) }));
+const current = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-40 border-b border-brass/20 bg-ink/85 backdrop-blur">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
+    <a
+      href="/"
+      class="font-display text-lg tracking-wide text-parchment transition-colors duration-250 ease-soft hover:text-brass-lit"
+    >
+      Enchanted Escapes
+    </a>
+    <ul class="flex flex-wrap items-center justify-end gap-x-5 gap-y-1 text-sm">
+      {
+        nav.map((n) => (
+          <li>
+            <a
+              href={n.href}
+              aria-current={current === n.href ? 'page' : undefined}
+              class:list={[
+                'font-body underline-offset-4 transition-colors duration-250 ease-soft hover:text-brass-lit hover:underline',
+                current === n.href ? 'text-brass-lit' : 'text-parchment-d',
+              ]}
+            >
+              {n.name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>

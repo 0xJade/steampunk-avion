@@ -1,17 +1,22 @@
 ---
-import { listing } from '@config/listing';
+import { listing as defaultListing, type ListingConfig } from '@config/listing';
 import Icon from './icons/Icon.astro';
 
+interface Props {
+  listing?: ListingConfig;
+}
+const { listing = defaultListing } = Astro.props;
 const { description, amenities, capacity } = listing;
+const heading = listing.copy?.spaceHeading ?? 'A parlor on wheels';
 ---
 
 <section id="the-space" class="mx-auto max-w-5xl px-6 py-20 md:py-28">
   <div class="grid gap-12 md:grid-cols-[1.1fr_1fr] md:gap-16">
     <div>
-      <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-brass">
+      <p class="font-typewriter text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
         The Space
       </p>
-      <h2 class="mt-3 font-display text-3xl md:text-4xl">A parlor on wheels</h2>
+      <h2 class="mt-3 font-display text-3xl md:text-4xl">{heading}</h2>
       <div class="mt-6 space-y-4 text-parchment-d">
         {description.map((p) => <p>{p}</p>)}
       </div>
@@ -24,7 +29,7 @@ const { description, amenities, capacity } = listing;
       {
         amenities.map((a) => (
           <li class="flex items-center gap-3">
-            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-brass/30 text-brass">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-brass/30 text-[var(--accent)]">
               <Icon name={a.icon} size={20} />
             </span>
             <span class="text-sm text-parchment">{a.label}</span>
