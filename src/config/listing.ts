@@ -213,8 +213,8 @@ export const steampunkExpress: ListingConfig = {
   ],
 
   seo: {
-    ogImage: 'https://steampunk-express.pages.dev/og.jpg', // TODO:REPLACE
-    siteUrl: 'https://steampunk-express.pages.dev', // TODO:REPLACE
+    ogImage: 'https://enchanted-escapes.pages.dev/og.jpg', // TODO: add og.jpg
+    siteUrl: 'https://enchanted-escapes.pages.dev',
   },
 };
 
